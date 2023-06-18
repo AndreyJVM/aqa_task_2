@@ -16,6 +16,10 @@
         <aspectj.version>1.9.7</aspectj.version>
         <!-- версия Allure -->
         <allure.version>2.15.0</allure.version>
+        <!--RestAssured-->
+        <io.rest-assured.version>4.4.0</io.rest-assured.version>
+        <!--JUnit4-->
+        <junit.version>4.13.2</junit.version>
     </properties>
 
     <dependencies>
@@ -23,7 +27,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -31,7 +35,7 @@
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
-            <version>4.4.0</version>
+            <version>${io.rest-assured.version}</version>
         </dependency>
 
         <!-- модуль взаимодействия Allure и Junit -->
