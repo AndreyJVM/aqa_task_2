@@ -29,7 +29,7 @@
 
 ![Linkedin-url](https://img.shields.io/badge/Allure-version_2.15-blue)
 
-![Linkedin-url](https://img.shields.io/badge/RestAssured-version_4.4.0-blue)
+![Linkedin-url](https://img.shields.io/badge/RestAssured-version_5.3.0-blue)
 
 ![Linkedin-url](https://img.shields.io/badge/JUnit_4-version_4.13.2-blue)
 

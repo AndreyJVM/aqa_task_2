@@ -17,7 +17,7 @@
         <!-- версия Allure -->
         <allure.version>2.15.0</allure.version>
         <!--RestAssured-->
-        <io.rest-assured.version>4.4.0</io.rest-assured.version>
+        <io.rest-assured.version>5.3.0</io.rest-assured.version>
         <!--JUnit4-->
         <junit.version>4.13.2</junit.version>
     </properties>
@@ -51,11 +51,7 @@
             <artifactId>allure-rest-assured</artifactId>
             <version>${allure.version}</version>
         </dependency>
-        <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <version>5.3.0</version>
-        </dependency>
+
     </dependencies>
 
     <build>
