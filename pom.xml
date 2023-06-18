@@ -20,6 +20,8 @@
         <io.rest-assured.version>5.3.0</io.rest-assured.version>
         <!--JUnit4-->
         <junit.version>4.13.2</junit.version>
+        <!--Gson-->
+        <gson.version>2.10</gson.version>
     </properties>
 
     <dependencies>
@@ -50,6 +52,12 @@
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-rest-assured</artifactId>
             <version>${allure.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
         </dependency>
 
     </dependencies>
