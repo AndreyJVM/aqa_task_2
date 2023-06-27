@@ -21,29 +21,16 @@ import static org.hamcrest.CoreMatchers.equalTo;
  */
 public class LoginUserTest {
     private UserClient userClient;
+    private ValidatableResponse responseLogin;
+    private UserStellar userStellar;
+
 
     @Before
     @Step("Предусловие.Создание пользователя")
     public void setUp() {
         userClient = new UserClient();
-        UserStellar userStellar = new UserStellar(TestValue.TEST_LOGIN_ONE, TestValue.TEST_PASSWORD_ONE, TestValue.TEST_NAME_ONE);
-        ValidatableResponse response = userClient.createUser(userStellar);
-    }
-
-    @After
-    @Step("Постусловие.Удаление пользователя")
-    public void clearData() {
-        try {
-            UserStellar userStellar = new UserStellar(TestValue.TEST_LOGIN_ONE, TestValue.TEST_PASSWORD_ONE, TestValue.TEST_NAME_ONE);
-            ValidatableResponse responseLogin = userClient.loginUser(userStellar);
-            String accessTokenWithBearer = responseLogin.extract().path("accessToken");
-            String accessToken = accessTokenWithBearer.replace("Bearer ", "");
-
-            ValidatableResponse responseDelete = userClient.deleteUser(accessToken);
-            System.out.println("удален");
-        } catch (Exception e) {
-            System.out.println("Пользователь не удалился. Возможно ошибка при создании");
-        }
+        userStellar = new UserStellar(TestValue.TEST_LOGIN_ONE, TestValue.TEST_PASSWORD_ONE, TestValue.TEST_NAME_ONE);
+        responseLogin = userClient.createUser(userStellar);
     }
 
     @Test
@@ -51,9 +38,7 @@ public class LoginUserTest {
     @Description("Post запрос на ручку /api/auth/login")
     @Step("Основной шаг - логин пользователя")
     public void loginWithUserTrue() {
-        UserStellar userStellar = new UserStellar(TestValue.TEST_LOGIN_ONE, TestValue.TEST_PASSWORD_ONE, TestValue.TEST_NAME_ONE);
-        ValidatableResponse responseLogin = userClient.loginUser(userStellar)
-                .assertThat().statusCode(HTTP_OK);
+        responseLogin.assertThat().statusCode(HTTP_OK);
     }
 
     @Test
@@ -61,8 +46,6 @@ public class LoginUserTest {
     @Description("Post запрос на ручку /api/auth/login")
     @Step("Основной шаг - логин пользователя")
     public void loginWithUserTrueCheckBody() {
-        UserStellar userStellar = new UserStellar(TestValue.TEST_LOGIN_ONE, TestValue.TEST_PASSWORD_ONE, TestValue.TEST_NAME_ONE);
-        ValidatableResponse responseLogin = userClient.loginUser(userStellar);
         responseLogin.assertThat().body("success", equalTo(true));
         responseLogin.assertThat().body("accessToken", startsWith("Bearer "))
                 .and()
@@ -77,9 +60,8 @@ public class LoginUserTest {
     @Description("Post запрос на ручку /api/auth/login")
     @Step("Основной шаг - логин пользователя")
     public void loginWithUserFalse() {
-        UserStellar userStellar = new UserStellar(TestValue.TEST_LOGIN_TWO, TestValue.TEST_PASSWORD_ONE, TestValue.TEST_NAME_ONE);
-        ValidatableResponse responseLogin = userClient.loginUser(userStellar)
-                .assertThat().statusCode(HTTP_UNAUTHORIZED);
+        userStellar.setEmail(TestValue.TEST_LOGIN_TWO);
+        userClient.loginUser(userStellar).assertThat().statusCode(HTTP_UNAUTHORIZED);
     }
 
     @Test
@@ -87,8 +69,8 @@ public class LoginUserTest {
     @Description("Post запрос на ручку /api/auth/login")
     @Step("Основной шаг - логин пользователя")
     public void loginWithUserFalseCheckBody() {
-        UserStellar userStellar = new UserStellar(TestValue.TEST_LOGIN_TWO, TestValue.TEST_PASSWORD_ONE, TestValue.TEST_NAME_ONE);
-        ValidatableResponse responseLogin = userClient.loginUser(userStellar)
+        userStellar.setEmail(TestValue.TEST_LOGIN_TWO);
+        userClient.loginUser(userStellar)
                 .assertThat().body("success", equalTo(false))
                 .and()
                 .body("message", equalTo("email or password are incorrect"));
@@ -99,8 +81,8 @@ public class LoginUserTest {
     @Description("Post запрос на ручку /api/auth/login")
     @Step("Основной шаг - логин пользователя")
     public void loginWithUserFalsePassword() {
-        UserStellar userStellar = new UserStellar(TestValue.TEST_LOGIN_ONE, TestValue.TEST_PASSWORD_TWO, TestValue.TEST_NAME_ONE);
-        ValidatableResponse responseLogin = userClient.loginUser(userStellar)
+        userStellar.setPassword(TestValue.TEST_PASSWORD_TWO);
+        userClient.loginUser(userStellar)
                 .assertThat().statusCode(HTTP_UNAUTHORIZED);
     }
 
@@ -109,10 +91,23 @@ public class LoginUserTest {
     @Description("Post запрос на ручку /api/auth/login")
     @Step("Основной шаг - логин пользователя")
     public void loginWithUserFalsePasswordCheckBody() {
-        UserStellar userStellar = new UserStellar(TestValue.TEST_LOGIN_ONE, TestValue.TEST_PASSWORD_TWO, TestValue.TEST_NAME_ONE);
-        ValidatableResponse responseLogin = userClient.loginUser(userStellar)
+        userStellar.setPassword(TestValue.TEST_PASSWORD_TWO);
+        userClient.loginUser(userStellar)
                 .assertThat().body("success", equalTo(false))
                 .and()
                 .body("message", equalTo("email or password are incorrect"));
+    }
+
+    @After
+    @Step("Постусловие.Удаление пользователя")
+    public void clearData() {
+        try {
+            String accessTokenWithBearer = responseLogin.extract().path("accessToken");
+            String accessToken = accessTokenWithBearer.replace("Bearer ", "");
+            userClient.deleteUser(accessToken);
+            System.out.println("удален");
+        } catch (Exception e) {
+            System.out.println("Пользователь не удалился. Возможно ошибка при создании");
+        }
     }
 }
