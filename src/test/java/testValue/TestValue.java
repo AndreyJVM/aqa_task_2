@@ -1,16 +1,18 @@
 package testValue;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 /**
  * Содержит значения для тестов, такие как: login, password и т.д
  */
-public class TestValue {
+public class TestValue extends RandomStringUtils{
     public static final String
-            TEST_LOGIN_ONE = "james-bond@yandex.ru",
-            TEST_LOGIN_TWO = "scroogeMcDuck@yandex.ru",
+            TEST_LOGIN_ONE = randomAlphabetic(10)+"@yandex.ru",
+            TEST_LOGIN_TWO = randomAlphabetic(10)+"@yandex.ru",
             TEST_PASSWORD_ONE = "123",
             TEST_PASSWORD_TWO = "123qwe",
-            TEST_NAME_ONE = "james-bond",
-            TEST_NAME_TWO = "scroogeMcDuck",
+            TEST_NAME_ONE = randomAlphabetic(10),
+            TEST_NAME_TWO = randomAlphabetic(10),
             TEST_BUN = "61c0c5a71d1f82001bdaaa6d",
             TEST_BAD_BUN = "123",
             TEST_FILLING_ONE = "61c0c5a71d1f82001bdaaa7a",
