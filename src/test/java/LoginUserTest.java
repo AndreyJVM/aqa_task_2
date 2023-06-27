@@ -34,18 +34,11 @@ public class LoginUserTest {
     }
 
     @Test
-    @DisplayName("Логин под существующим пользователем. Ответ 200")
+    @DisplayName("Логин под существующим пользователем. Ответ 200 / Проверка body")
     @Description("Post запрос на ручку /api/auth/login")
     @Step("Основной шаг - логин пользователя")
-    public void loginWithUserTrue() {
+    public void loginWithUserTrueAndCheckBody() {
         responseLogin.assertThat().statusCode(HTTP_OK);
-    }
-
-    @Test
-    @DisplayName("Логин под существующим пользователем. Проверка body")
-    @Description("Post запрос на ручку /api/auth/login")
-    @Step("Основной шаг - логин пользователя")
-    public void loginWithUserTrueCheckBody() {
         responseLogin.assertThat().body("success", equalTo(true));
         responseLogin.assertThat().body("accessToken", startsWith("Bearer "))
                 .and()
@@ -56,20 +49,12 @@ public class LoginUserTest {
     }
 
     @Test
-    @DisplayName("Логин под неверным именем почты. Ответ 401")
+    @DisplayName("Логин под неверным именем почты. Ответ 401 / Проверка body")
     @Description("Post запрос на ручку /api/auth/login")
     @Step("Основной шаг - логин пользователя")
-    public void loginWithUserFalse() {
+    public void loginWithUserFalseAndCheckBody() {
         userStellar.setEmail(TestValue.TEST_LOGIN_TWO);
         userClient.loginUser(userStellar).assertThat().statusCode(HTTP_UNAUTHORIZED);
-    }
-
-    @Test
-    @DisplayName("Логин под неверным именем почты. Проверка body")
-    @Description("Post запрос на ручку /api/auth/login")
-    @Step("Основной шаг - логин пользователя")
-    public void loginWithUserFalseCheckBody() {
-        userStellar.setEmail(TestValue.TEST_LOGIN_TWO);
         userClient.loginUser(userStellar)
                 .assertThat().body("success", equalTo(false))
                 .and()
@@ -77,21 +62,13 @@ public class LoginUserTest {
     }
 
     @Test
-    @DisplayName("Логин под неверным паролем. Ответ 401")
+    @DisplayName("Логин под неверным паролем. Ответ 401 / Проверка body")
     @Description("Post запрос на ручку /api/auth/login")
     @Step("Основной шаг - логин пользователя")
-    public void loginWithUserFalsePassword() {
+    public void loginWithUserFalsePasswordAndCheckBody() {
         userStellar.setPassword(TestValue.TEST_PASSWORD_TWO);
         userClient.loginUser(userStellar)
                 .assertThat().statusCode(HTTP_UNAUTHORIZED);
-    }
-
-    @Test
-    @DisplayName("Логин под неверным паролем. Проверка body")
-    @Description("Post запрос на ручку /api/auth/login")
-    @Step("Основной шаг - логин пользователя")
-    public void loginWithUserFalsePasswordCheckBody() {
-        userStellar.setPassword(TestValue.TEST_PASSWORD_TWO);
         userClient.loginUser(userStellar)
                 .assertThat().body("success", equalTo(false))
                 .and()

@@ -1,18 +1,19 @@
 package order;
 
 import io.restassured.response.ValidatableResponse;
+import model.BaseReqSpecURI;
 import model.OrderStellar;
 
 import static io.restassured.RestAssured.given;
 
-public class OrderClient extends OrderRestClient{
-    private static final String USER_URI = BASE_URI + "/api";
+public class OrderClient extends BaseReqSpecURI {
+
 
     public ValidatableResponse orderWithoutAuth(OrderStellar orderStellar) {
         return given()
                 .spec(getBaseReqSpec())
                 .body(orderStellar)
-                .post(USER_URI + "/orders")
+                .post("/api/orders")
                 .then();
 
     }
@@ -22,7 +23,7 @@ public class OrderClient extends OrderRestClient{
                 .spec(getBaseReqSpec())
                 .body(orderStellar)
                 .auth().oauth2(accessToken)
-                .post(USER_URI + "/orders")
+                .post("/api/orders")
                 .then();
     }
 
@@ -30,14 +31,14 @@ public class OrderClient extends OrderRestClient{
         return given()
                 .spec(getBaseReqSpec())
                 .auth().oauth2(accessToken)
-                .get(USER_URI + "/orders")
+                .get("/api/orders")
                 .then();
     }
 
     public ValidatableResponse getOrderUserNotAuth() {
         return given()
                 .spec(getBaseReqSpec())
-                .get(USER_URI + "/orders")
+                .get("/api/orders")
                 .then();
     }
 }

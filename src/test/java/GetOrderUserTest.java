@@ -16,7 +16,8 @@ import java.util.ArrayList;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.not;
+
 /**
  5. Получение заказов конкретного пользователя:
  * авторизованный пользователь,
@@ -52,7 +53,7 @@ public class GetOrderUserTest {
                 .assertThat().statusCode(HTTP_OK);
         responseGetOrders.assertThat().body("success", equalTo(true))
                 .and()
-                .body("orders", notNullValue());
+                .body("orders", not(ingredients.isEmpty()));
     }
 
     @Test

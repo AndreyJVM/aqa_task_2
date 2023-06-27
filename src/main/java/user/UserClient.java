@@ -1,19 +1,20 @@
 package user;
 
 import io.restassured.response.ValidatableResponse;
+import model.BaseReqSpecURI;
 import model.UserStellar;
 
 import static io.restassured.RestAssured.given;
 
-public class UserClient extends UserRestClient{
-    private static final String USER_URI = BASE_URI + "/api";
+public class UserClient extends BaseReqSpecURI {
+
 
     public ValidatableResponse createUser(UserStellar userStellar) {
         return given()
                 .spec(getBaseReqSpec())
                 .body(userStellar)
                 .when()
-                .post(USER_URI + "/auth/register")
+                .post("/api/auth/register")
                 .then();
     }
 
@@ -22,7 +23,7 @@ public class UserClient extends UserRestClient{
                 .spec(getBaseReqSpec())
                 .body(userStellar)
                 .when()
-                .post(USER_URI + "/auth/login")
+                .post("/api/auth/login")
                 .then();
     }
 
@@ -30,7 +31,7 @@ public class UserClient extends UserRestClient{
         return given()
                 .spec(getBaseReqSpec())
                 .auth().oauth2(accessToken)
-                .delete(USER_URI + "/auth/user")
+                .delete("/api/auth/user")
                 .then();
     }
 
@@ -39,7 +40,7 @@ public class UserClient extends UserRestClient{
                 .spec(getBaseReqSpec())
                 .body(userStellar)
                 .auth().oauth2(accessToken)
-                .patch(USER_URI + "/auth/user")
+                .patch("/api/auth/user")
                 .then();
     }
 
@@ -47,7 +48,7 @@ public class UserClient extends UserRestClient{
         return given()
                 .spec(getBaseReqSpec())
                 .body(userStellar)
-                .patch(USER_URI + "/auth/user")
+                .patch("/api/auth/user")
                 .then();
     }
 }

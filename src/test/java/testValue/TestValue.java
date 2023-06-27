@@ -7,8 +7,8 @@ import org.apache.commons.lang3.RandomStringUtils;
  */
 public class TestValue extends RandomStringUtils{
     public static final String
-            TEST_LOGIN_ONE = randomAlphabetic(10)+"@yandex.ru",
-            TEST_LOGIN_TWO = randomAlphabetic(10)+"@yandex.ru",
+            TEST_LOGIN_ONE = randomAlphabetic(10).toLowerCase()+"@yandex.ru",
+            TEST_LOGIN_TWO = randomAlphabetic(10).toLowerCase()+"@yandex.ru",
             TEST_PASSWORD_ONE = "123",
             TEST_PASSWORD_TWO = "123qwe",
             TEST_NAME_ONE = randomAlphabetic(10),
