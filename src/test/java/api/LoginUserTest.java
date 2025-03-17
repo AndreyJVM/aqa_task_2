@@ -1,3 +1,5 @@
+package api;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
@@ -6,13 +8,13 @@ import model.UserStellar;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import testValue.TestValue;
 import user.UserClient;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static testValue.TestValue.*;
 
 /**
  2. Логин пользователя:
@@ -29,7 +31,7 @@ public class LoginUserTest {
     @Step("Предусловие.Создание пользователя")
     public void setUp() {
         userClient = new UserClient();
-        userStellar = new UserStellar(TestValue.TEST_LOGIN_ONE, TestValue.TEST_PASSWORD_ONE, TestValue.TEST_NAME_ONE);
+        userStellar = new UserStellar(TEST_LOGIN_ONE, TEST_PASSWORD_ONE, TEST_NAME_ONE);
         responseLogin = userClient.createUser(userStellar);
     }
 
@@ -43,9 +45,9 @@ public class LoginUserTest {
         responseLogin.assertThat().body("accessToken", startsWith("Bearer "))
                 .and()
                 .body("refreshToken", notNullValue());
-        responseLogin.assertThat().body("user.email", equalTo(TestValue.TEST_LOGIN_ONE))
+        responseLogin.assertThat().body("user.email", equalTo(TEST_LOGIN_ONE))
                 .and()
-                .body("user.name", equalTo(TestValue.TEST_NAME_ONE));
+                .body("user.name", equalTo(TEST_NAME_ONE));
     }
 
     @Test
@@ -53,7 +55,7 @@ public class LoginUserTest {
     @Description("Post запрос на ручку /api/auth/login")
     @Step("Основной шаг - логин пользователя")
     public void loginWithUserFalseAndCheckBody() {
-        userStellar.setEmail(TestValue.TEST_LOGIN_TWO);
+        userStellar.setEmail(TEST_LOGIN_TWO);
         userClient.loginUser(userStellar).assertThat().statusCode(HTTP_UNAUTHORIZED);
         userClient.loginUser(userStellar)
                 .assertThat().body("success", equalTo(false))
@@ -66,7 +68,7 @@ public class LoginUserTest {
     @Description("Post запрос на ручку /api/auth/login")
     @Step("Основной шаг - логин пользователя")
     public void loginWithUserFalsePasswordAndCheckBody() {
-        userStellar.setPassword(TestValue.TEST_PASSWORD_TWO);
+        userStellar.setPassword(TEST_PASSWORD_TWO);
         userClient.loginUser(userStellar)
                 .assertThat().statusCode(HTTP_UNAUTHORIZED);
         userClient.loginUser(userStellar)

@@ -1,3 +1,5 @@
+package api;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
@@ -8,13 +10,14 @@ import order.OrderClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import testValue.TestValue;
 import user.UserClient;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.net.HttpURLConnection.*;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static testValue.TestValue.*;
 
 /**
  * 4. Создание заказа:
@@ -40,12 +43,15 @@ public class CreateOrderTest {
     @Step("Создание заказа")
     public void createOrderWithoutAuth() {
         ArrayList<String> ingredients = new ArrayList<>();
-        ingredients.add(TestValue.TEST_BUN);
-        ingredients.add(TestValue.TEST_FILLING_ONE);
-        ingredients.add(TestValue.TEST_FILLING_TWO);
+        ingredients.add(TEST_BUN);
+        ingredients.add(TEST_FILLING_ONE);
+        ingredients.add(TEST_FILLING_TWO);
         OrderStellar orderStellar = new OrderStellar(ingredients);
-        ValidatableResponse response = orderClient.orderWithoutAuth(orderStellar)
-                .assertThat().statusCode(HTTP_OK);
+
+        orderClient
+                .orderWithoutAuth(orderStellar)
+                .assertThat()
+                .statusCode(HTTP_OK);
     }
 
     @Test
@@ -54,11 +60,13 @@ public class CreateOrderTest {
     @Step("Создание заказа")
     public void createOrderWithoutAuthErrorHash() {
         ArrayList<String> ingredients = new ArrayList<>();
-        ingredients.add(TestValue.TEST_BAD_BUN);
-        ingredients.add(TestValue.TEST_FILLING_ONE);
+        ingredients.add(TEST_BAD_BUN);
+        ingredients.add(TEST_FILLING_ONE);
         OrderStellar orderStellar = new OrderStellar(ingredients);
-        ValidatableResponse response = orderClient.orderWithoutAuth(orderStellar)
-                .assertThat().statusCode(HTTP_INTERNAL_ERROR);
+        orderClient
+                .orderWithoutAuth(orderStellar)
+                .assertThat()
+                .statusCode(HTTP_INTERNAL_ERROR);
     }
 
     @Test
@@ -67,9 +75,12 @@ public class CreateOrderTest {
     @Step("Создание заказа")
     public void createOrderWithoutAuthNoIngredient() {
         OrderStellar orderStellar = new OrderStellar(null);
-        ValidatableResponse response = orderClient.orderWithoutAuth(orderStellar)
-                .assertThat().statusCode(HTTP_BAD_REQUEST);
-        response.assertThat().body("success", equalTo(false))
+        orderClient
+                .orderWithoutAuth(orderStellar)
+                .assertThat()
+                .statusCode(HTTP_BAD_REQUEST)
+                .assertThat()
+                .body("success", equalTo(false))
                 .and()
                 .body("message", equalTo("Ingredient ids must be provided"));
     }
@@ -79,20 +90,23 @@ public class CreateOrderTest {
     @Description("Post запрос на ручку /api/orders")
     @Step("Создание заказа")
     public void createOrderWithAuth() {
-        UserStellar userStellar = new UserStellar(TestValue.TEST_LOGIN_ONE, TestValue.TEST_PASSWORD_ONE, TestValue.TEST_NAME_ONE);
+        UserStellar userStellar = new UserStellar(TEST_LOGIN_ONE, TEST_PASSWORD_ONE, TEST_NAME_ONE);
         ValidatableResponse responseCreate = userClient.createUser(userStellar).assertThat().statusCode(HTTP_OK);
         String accessTokenWithBearer = responseCreate.extract().path("accessToken");
         String accessToken = accessTokenWithBearer.replace("Bearer ", "");
         ArrayList<String> ingredients = new ArrayList<>();
-        ingredients.add(TestValue.TEST_BUN);
-        ingredients.add(TestValue.TEST_FILLING_ONE);
-        ingredients.add(TestValue.TEST_FILLING_TWO);
+        ingredients.add(TEST_BUN);
+        ingredients.add(TEST_FILLING_ONE);
+        ingredients.add(TEST_FILLING_TWO);
         OrderStellar orderStellar = new OrderStellar(ingredients);
-        ValidatableResponse response = orderClient.orderWithAuth(accessToken, orderStellar)
-                .assertThat().statusCode(HTTP_OK);
-        response.assertThat().body("order.owner.name", equalTo(TestValue.TEST_NAME_ONE))
+
+        orderClient
+                .orderWithAuth(accessToken, orderStellar)
+                .assertThat().statusCode(HTTP_OK)
+                .assertThat()
+                .body("order.owner.name", equalTo(TEST_NAME_ONE))
                 .and()
-                .body("order.owner.email", equalTo(TestValue.TEST_LOGIN_ONE));
+                .body("order.owner.email", equalTo(TEST_LOGIN_ONE));
     }
 
     @Test
@@ -100,14 +114,16 @@ public class CreateOrderTest {
     @Description("Post запрос на ручку /api/orders")
     @Step("Создание заказа")
     public void createOrderWithAuthNoIngredient() {
-        UserStellar userStellar = new UserStellar(TestValue.TEST_LOGIN_ONE, TestValue.TEST_PASSWORD_ONE, TestValue.TEST_NAME_ONE);
+        UserStellar userStellar = new UserStellar(TEST_LOGIN_ONE, TEST_PASSWORD_ONE, TEST_NAME_ONE);
         ValidatableResponse responseCreate = userClient.createUser(userStellar).assertThat().statusCode(HTTP_OK);
         String accessTokenWithBearer = responseCreate.extract().path("accessToken");
         String accessToken = accessTokenWithBearer.replace("Bearer ", "");
         OrderStellar orderStellar = new OrderStellar(null);
-        ValidatableResponse response = orderClient.orderWithAuth(accessToken, orderStellar)
-                .assertThat().statusCode(HTTP_BAD_REQUEST);
-        response.assertThat().body("success", equalTo(false))
+        orderClient
+                .orderWithAuth(accessToken, orderStellar)
+                .assertThat().statusCode(HTTP_BAD_REQUEST)
+                .assertThat()
+                .body("success", equalTo(false))
                 .and()
                 .body("message", equalTo("Ingredient ids must be provided"));
     }
@@ -117,22 +133,22 @@ public class CreateOrderTest {
     @Description("Post запрос на ручку /api/orders")
     @Step("Создание заказа")
     public void createOrderWithAuthErrorHash() {
-        UserStellar userStellar = new UserStellar(TestValue.TEST_LOGIN_ONE, TestValue.TEST_PASSWORD_ONE, TestValue.TEST_NAME_ONE);
+        UserStellar userStellar = new UserStellar(TEST_LOGIN_ONE, TEST_PASSWORD_ONE, TEST_NAME_ONE);
         ValidatableResponse responseCreate = userClient.createUser(userStellar).assertThat().statusCode(HTTP_OK);
         String accessTokenWithBearer = responseCreate.extract().path("accessToken");
         String accessToken = accessTokenWithBearer.replace("Bearer ", "");
-        ArrayList<String> ingredients = new ArrayList<>();
-        ingredients.add(TestValue.TEST_BAD_BUN);
-        ingredients.add(TestValue.TEST_FILLING_TWO);
+        ArrayList<String> ingredients = new ArrayList<>(List.of(TEST_BAD_BUN, TEST_FILLING_TWO));
         OrderStellar orderStellar = new OrderStellar(ingredients);
-        ValidatableResponse response = orderClient.orderWithAuth(accessToken, orderStellar)
-                .assertThat().statusCode(HTTP_INTERNAL_ERROR);
+        orderClient
+                .orderWithAuth(accessToken, orderStellar)
+                .assertThat()
+                .statusCode(500);
     }
 
     @After
     public void clearData() {
         try {
-            UserStellar userStellar = new UserStellar(TestValue.TEST_LOGIN_ONE, TestValue.TEST_PASSWORD_ONE, TestValue.TEST_NAME_ONE);
+            UserStellar userStellar = new UserStellar(TEST_LOGIN_ONE, TEST_PASSWORD_ONE, TEST_NAME_ONE);
             ValidatableResponse responseLogin = userClient.loginUser(userStellar);
             String accessTokenWithBearer = responseLogin.extract().path("accessToken");
             String accessToken = accessTokenWithBearer.replace("Bearer ", "");
