@@ -7,23 +7,21 @@ import io.restassured.response.ValidatableResponse;
 import model.UserStellar;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import user.UserClient;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static testValue.TestValue.*;
 
-/**
- * 1. Создание пользователя:
- * создать уникального пользователя;
- * создать пользователя, который уже зарегистрирован;
- * создать пользователя и не заполнить одно из обязательных полей.
- */
 public class CreateUserTest {
     private UserClient userClient;
     private ValidatableResponse responseLogin;
     private UserStellar userStellar;
+
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -51,7 +49,8 @@ public class CreateUserTest {
     @Description("Post запрос на ручку /api/v1/courier")
     @Step("Основной шаг - создание пользователя")
     public void createRegisteredUserAndCheckBodyTest() {
-        userClient.createUser(userStellar)
+        ValidatableResponse response = userClient.createUser(userStellar);
+        response
                 .statusCode(403)
                 .body("success", equalTo(false))
                 .body("message", equalTo("User already exists"));
@@ -62,7 +61,8 @@ public class CreateUserTest {
     @Description("Post запрос на ручку /api/v1/courier")
     @Step("Основной шаг - создание пользователя")
     public void createUserWithoutPasswordTest() {
-        userClient.createUser(new UserStellar(TEST_LOGIN_ONE, null, TEST_NAME_ONE))
+        ValidatableResponse response = userClient.createUser(new UserStellar(TEST_LOGIN_ONE, null, TEST_NAME_ONE));
+        response
                 .statusCode(403)
                 .body("success", equalTo(false))
                 .body("message", equalTo("Email, password and name are required fields"));
@@ -73,7 +73,8 @@ public class CreateUserTest {
     @Description("Post запрос на ручку /api/v1/courier")
     @Step("Основной шаг - создание пользователя")
     public void createUserWithoutEmailTest() {
-        userClient.createUser(new UserStellar(null, TEST_PASSWORD_ONE, TEST_NAME_ONE))
+        ValidatableResponse response = userClient.createUser(new UserStellar(null, TEST_PASSWORD_ONE, TEST_NAME_ONE));
+        response
                 .statusCode(403)
                 .body("success", equalTo(false))
                 .body("message", equalTo("Email, password and name are required fields"));
@@ -84,23 +85,27 @@ public class CreateUserTest {
     @Description("Post запрос на ручку /api/v1/courier")
     @Step("Основной шаг - создание пользователя")
     public void createUserWithoutNameTest() {
-        userClient.createUser(new UserStellar(TEST_NAME_ONE, TEST_PASSWORD_ONE, null))
-                .assertThat()
+        ValidatableResponse response = userClient.createUser(new UserStellar(TEST_LOGIN_ONE, TEST_PASSWORD_ONE, null));
+        response
                 .statusCode(403)
                 .body("success", equalTo(false))
                 .body("message", equalTo("Email, password and name are required fields"));
     }
 
     @After
-    @Step("Постусловие.Удаление пользователя")
+    @Step("Постусловие. Удаление пользователя")
     public void clearData() {
         try {
             String accessTokenWithBearer = responseLogin.extract().path("accessToken");
-            String accessToken = accessTokenWithBearer.replace("Bearer ", "");
-            userClient.deleteUser(accessToken);
-            System.out.println("удален");
+            if (accessTokenWithBearer != null) {
+                String accessToken = accessTokenWithBearer.replace("Bearer ", "");
+                userClient.deleteUser(accessToken);
+                System.out.println("Пользователь успешно удален.");
+            } else {
+                System.out.println("Токен доступа отсутствует. Пользователь не был удален.");
+            }
         } catch (Exception e) {
-            System.out.println("Пользователь не удалился. Возможно ошибка при создании");
+            System.out.println("Пользователь не удалился. Возможно ошибка при создании: " + e.getMessage());
         }
     }
 }
