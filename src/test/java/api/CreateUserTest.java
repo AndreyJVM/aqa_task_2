@@ -39,13 +39,13 @@ public class CreateUserTest {
     @Description("Post запрос на ручку /api/v1/courier")
     @Step("Основной шаг - создание пользователя")
     public void createUniqueUserAndCheckBodyTest() {
-        responseLogin.assertThat().statusCode(HTTP_OK);
-        responseLogin.assertThat().body("user.email", equalTo(TEST_LOGIN_ONE))
-                .and()
-                .assertThat().body("user.name", equalTo(TEST_NAME_ONE));
-        responseLogin.assertThat().body("accessToken", startsWith("Bearer "));
-        responseLogin.assertThat().body("refreshToken", notNullValue());
-        responseLogin.assertThat().body("success", equalTo(true));
+        responseLogin
+                .statusCode(200)
+                .body("user.email", equalTo(TEST_LOGIN_ONE))
+                .body("user.name", equalTo(TEST_NAME_ONE))
+                .body("accessToken", startsWith("Bearer "))
+                .body("refreshToken", notNullValue())
+                .body("success", equalTo(true));
     }
 
     @Test
@@ -53,10 +53,9 @@ public class CreateUserTest {
     @Description("Post запрос на ручку /api/v1/courier")
     @Step("Основной шаг - создание пользователя")
     public void createRegisteredUserAndCheckBodyTest() {
-        ValidatableResponse responseTwo = userClient.createUser(userStellar)
-                .assertThat().statusCode(HTTP_FORBIDDEN);
-        responseTwo.assertThat().body("success", equalTo(false))
-                .and()
+        userClient.createUser(userStellar)
+                .statusCode(403)
+                .body("success", equalTo(false))
                 .body("message", equalTo("User already exists"));
     }
 
@@ -65,18 +64,10 @@ public class CreateUserTest {
     @Description("Post запрос на ручку /api/v1/courier")
     @Step("Основной шаг - создание пользователя")
     public void createUserWithoutPasswordTest() {
-        try {
-            ValidatableResponse responseLoginNotPassword = userClient.createUser(new UserStellar(TEST_LOGIN_ONE, null, TEST_NAME_ONE))
-                    .assertThat().statusCode(HTTP_FORBIDDEN);
-            responseLoginNotPassword.assertThat().body("success", equalTo(false))
-                    .and().body("message", equalTo("Email, password and name are required fields"));
-        } catch (Exception e) {
-            ValidatableResponse responseLoginNotPassword = userClient.createUser(new UserStellar(TEST_LOGIN_ONE, null, TEST_NAME_ONE));
-            String accessTokenWithBearer = responseLoginNotPassword.extract().path("accessToken");
-            String accessToken = accessTokenWithBearer.replace("Bearer ", "");
-            userClient.deleteUser(accessToken);
-            System.out.println("удален");
-        }
+            userClient.createUser(new UserStellar(TEST_LOGIN_ONE, null, TEST_NAME_ONE))
+                    .statusCode(403)
+                    .body("success", equalTo(false))
+                    .body("message", equalTo("Email, password and name are required fields"));
     }
 
     @Test
