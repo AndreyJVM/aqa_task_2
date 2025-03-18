@@ -10,8 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import user.UserClient;
 
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static testValue.TestValue.*;
@@ -64,10 +62,10 @@ public class CreateUserTest {
     @Description("Post запрос на ручку /api/v1/courier")
     @Step("Основной шаг - создание пользователя")
     public void createUserWithoutPasswordTest() {
-            userClient.createUser(new UserStellar(TEST_LOGIN_ONE, null, TEST_NAME_ONE))
-                    .statusCode(403)
-                    .body("success", equalTo(false))
-                    .body("message", equalTo("Email, password and name are required fields"));
+        userClient.createUser(new UserStellar(TEST_LOGIN_ONE, null, TEST_NAME_ONE))
+                .statusCode(403)
+                .body("success", equalTo(false))
+                .body("message", equalTo("Email, password and name are required fields"));
     }
 
     @Test
@@ -75,19 +73,10 @@ public class CreateUserTest {
     @Description("Post запрос на ручку /api/v1/courier")
     @Step("Основной шаг - создание пользователя")
     public void createUserWithoutEmailTest() {
-        try {
-            ValidatableResponse responseLoginNotEmail = userClient.createUser(new UserStellar(null, TEST_PASSWORD_ONE, TEST_NAME_ONE))
-                    .assertThat().statusCode(HTTP_FORBIDDEN);
-            responseLoginNotEmail.assertThat().body("success", equalTo(false))
-                    .and().body("message", equalTo("Email, password and name are required fields"));
-        } catch (Exception e) {
-            ValidatableResponse responseLoginNotEmail = userClient.createUser(new UserStellar(null, TEST_PASSWORD_ONE, TEST_NAME_ONE));
-            String accessTokenWithBearer = responseLoginNotEmail.extract().path("accessToken");
-            String accessToken = accessTokenWithBearer.replace("Bearer ", "");
-            userClient.deleteUser(accessToken);
-            System.out.println("удален");
-        }
-
+        userClient.createUser(new UserStellar(null, TEST_PASSWORD_ONE, TEST_NAME_ONE))
+                .statusCode(403)
+                .body("success", equalTo(false))
+                .body("message", equalTo("Email, password and name are required fields"));
     }
 
     @Test
@@ -95,18 +84,11 @@ public class CreateUserTest {
     @Description("Post запрос на ручку /api/v1/courier")
     @Step("Основной шаг - создание пользователя")
     public void createUserWithoutNameTest() {
-        try {
-            ValidatableResponse responseLoginNotName = userClient.createUser(new UserStellar(TEST_NAME_ONE, TEST_PASSWORD_ONE, null))
-                    .assertThat().statusCode(HTTP_FORBIDDEN);
-            responseLoginNotName.assertThat().body("success", equalTo(false))
-                    .and().body("message", equalTo("Email, password and name are required fields"));
-        } catch (Exception e) {
-            ValidatableResponse responseLoginNotName = userClient.createUser(new UserStellar(TEST_NAME_ONE, TEST_PASSWORD_ONE, null));
-            String accessTokenWithBearer = responseLoginNotName.extract().path("accessToken");
-            String accessToken = accessTokenWithBearer.replace("Bearer ", "");
-            userClient.deleteUser(accessToken);
-            System.out.println("удален");
-        }
+        userClient.createUser(new UserStellar(TEST_NAME_ONE, TEST_PASSWORD_ONE, null))
+                .assertThat()
+                .statusCode(403)
+                .body("success", equalTo(false))
+                .body("message", equalTo("Email, password and name are required fields"));
     }
 
     @After
