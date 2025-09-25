@@ -34,6 +34,4 @@
 ![Linkedin-url](https://img.shields.io/badge/JUnit_4-version_4.13.2-blue)
 
 ---
-
----
 ###### Над проектом работал [Andrey Vorobev](https://github.com/AndreyJVM)
